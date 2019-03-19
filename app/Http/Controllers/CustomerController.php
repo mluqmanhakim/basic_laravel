@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\DB;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Customer;
@@ -11,130 +11,56 @@ use App\Customer;
 
 class CustomerController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-		
-		
-		
-		
-		
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+   
     public function create()
     {
-        return view('create_customer');
-		
-		
-    }
-	public function create_post(Request $request){
-		$customer = new Customer;
-
-        $customer->name = $request["name"];
-		$customer->email = $request["email"];;
-		$customer->occupation = $request["occupation"];
-		$customer->save();
-		return view('view_customer', ['customer' => $customer]);
-	}
-	
-	public function get(){
-		$all_customer = Customer::all();
-		
-		return view('all_customer', ['all_customer' => $all_customer]);
-	}
-
-	
-	public function edit($id)
-    {
-        //
-		
-		
-		$customer = Customer::find($id);
-
-		return view('edit_customer', ['customer' => $customer]);
-	
-	
-    }
-	public function edit_post(Request $request){
-		$customer = Customer::find($request["id"]);
-		
-        $customer->name = $request["name"];
-		$customer->email = $request["email"];;
-		$customer->occupation = $request["occupation"];
-		$customer->save();
-		return view('view_customer', ['customer' => $customer]);
-	
-	
-    }
-	
-	  public function delete($id)
-    {
-        //
-		
-		$customer = Customer::find($id);
-
-		$customer->delete();
-	
-		return "Berhasil Di Delete";
-	}
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
+        return view('create_customer'); 
     }
 
+    public function create_post(Request $request) {
+        $nama = $request["nama"];
+        $email = $request["email"];;
+        $alamat = $request["alamat"];
+        $jenis_kelamin = $request["jenis_kelamin"];
+        
+        DB::insert('insert into customer (nama, email, alamat, jenis_kelamin) values (?, ?, ?, ?)', [$nama, $email, $alamat, $jenis_kelamin]);
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
+
+        return view('view_customer');
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     
+    public function get() {
+        $all_customer = DB::select('select * from customer');
+        
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
+        return view('all_customer', ['all_customer' => $all_customer]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-  
+    
+    public function edit($id)
+    {
+        $customer = Customer::find($id);
+        return view('edit_customer', ['customer' => $customer]);
+    }
+
+    public function edit_post(Request $request) {
+        $nama = $request["nama"];
+        $email = $request["email"];;
+        $alamat = $request["alamat"];
+        $jenis_kelamin = $request["jenis_kelamin"];
+
+
+        DB::update('update customer set nama=?, email=?, alamat=?, jenis_kelamin=? where id = ?', [$nama, $email, $alamat, $jenis_kelamin, $request["id"]]);
+
+
+
+        return 'Data berhasil diubah';
+    }
+    
+    public function delete($id)
+    {
+        DB::delete('delete from customer where id = ?', [$id]);
+    
+        return "Berhasil Di Delete";
+    }
 }
